@@ -15,10 +15,6 @@
 #define POTENT_1 4
 #define POTENT_2 3
 
-
-
-int rotDirection = 0;
-
 /**
  * Motor struct with all the values from an single motor combined.
  */
@@ -31,6 +27,12 @@ struct Motor {
   uint8_t potentiometer = 0;
   uint16_t ADC_value = 0;
 };
+
+/**
+ * Global defines of the Motor structs because otherwise they can't be used in setup() and loop().
+ */
+Motor upper_motor;
+Motor lower_motor;
 
 /**
  * Function sets the inputs and outputs used by the motor driver
@@ -51,7 +53,7 @@ void setup_motor(const Motor &motor) {
 /**
  * If motor speed is set to 0 this function stops the motor
  * Otherwise it set the orientation and the give speed in the Motor struct
- * @parm motor Motor struct with the pins, rotation and speed
+ * @param motor Motor struct with the pins, rotation and speed
  * @return void
  */
 void set_motor_speed(const Motor &motor) {
@@ -73,18 +75,26 @@ void set_motor_speed(const Motor &motor) {
 }
 
 /**
- * Set up the i/o of the Arduino.
+ * Reads ADC value of potentiometer defined in the Motor struct.
+ * ADC value is saved in the ADC_value in the struct.
+ * @param motor Motor struct with the potentiometer and ADC value
+ * @return void 
+ */
+void read_potentiometer(Motor &motor) {
+    motor.ADC_value = analogRead(motor.potentiometer);      // Read ADC value
+}
+
+/**
+ * Set up the I/O of the Arduino.
  * @return void
  */
 void setup() {
-  Motor upper_motor;
-  upper_motor.pwm_pin = MOTOR_1_PWM_PIN;                    //PWM pin
+  upper_motor.pwm_pin = MOTOR_1_PWM_PIN;                    // PWM pin
   upper_motor.ADC_value = 50;                               // Default motor speed
   upper_motor.enable_rotate_left_pin = MOTOR_1_LEFT_EN;     // Enable left rotation pin
   upper_motor.enable_rotate_right_pin = MOTOR_1_RIGHT_EN;   // Enable right rotation pin
   upper_motor.potentiometer = POTENT_1;                     // Potentiometer ADC pin
 
-  Motor lower_motor;
   upper_motor.pwm_pin = MOTOR_2_PWM_PIN;                    //PWM pin
   upper_motor.ADC_value = 50;                               // Default motor speed
   upper_motor.enable_rotate_left_pin = MOTOR_2_LEFT_EN;     // Enable left rotation pin
@@ -98,30 +108,32 @@ void setup() {
 }
 
 void loop() {
-  int potValue = analogRead(A4); // Read potentiometer value
-  Serial.println(potValue);
-  //int pwmOutput = map(potValue, 0, 1023, 0 , 255); // Map the potentiometer value from 0 to 255
-  int pwmOutput=50; // 0 is laagst 255 is hoogst
-  //analogWrite(enA, pwmOutput); // Send PWM signal to L298N Enable pin
-  // digitalWrite(enA,pwmOutput);
-  // If button is pressed - change rotation direction
-  if ((potValue<512)  && (rotDirection == 0)) {
-    // digitalWrite(in1, HIGH);
-    // digitalWrite(in2, LOW);
-    Serial.println("naar voor");
-    delay(10);
-  }
-  // If button is pressed - change rotation direction
-  if ((potValue>512) && (rotDirection == 1)) {
-    // digitalWrite(in1, LOW);
-    // digitalWrite(in2, HIGH);
-    Serial.println("naar achter");
-      delay(10);
+    read_potentiometer(upper_motor);                        // Read upper motor ADC value
+    read_potentiometer(lower_motor);                        // Read lower motor ADC value
+
+    Serial.print(upper_motor.ADC_value);                    // Print ADC values for debugging
+    Serial.print(", ");
+    Serial.println(lower_motor.ADC_value);
+
+    set_motor_speed(upper_motor);
+
+    int pwmOutput=50; // 0 is laagst 255 is hoogst
+    // If button is pressed - change rotation direction
+    if ((upper_motor.ADC_value < 512) && (upper_motor.rot_direction == false)) {
+        Serial.println("Naar voor");
+        delay(10);
     }
-    if(potValue<100){
-      rotDirection=0;
-  }
-  if(potValue>900){
-    rotDirection = 1;
-  }
+  
+    // If button is pressed - change rotation direction
+    if ((upper_motor.ADC_value > 512) && (upper_motor.rot_direction == true)) {
+        Serial.println("Naar achter");
+    }
+
+    if (upper_motor.ADC_value<100) {
+        upper_motor.rot_direction = false;
+    }
+    
+    if (upper_motor.ADC_value> 900) {
+        upper_motor.rot_direction = true;
+    }
 }
