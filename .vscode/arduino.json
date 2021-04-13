@@ -1,4 +1,6 @@
 {
-    "board": "arduino:avr:uno",
-    "sketch": "test_motor_exo_v1.ino"
+    "board": "arduino:avr:leonardo",
+    "sketch": "test_motor_exo_v1.ino",
+    "programmer": "arduino:avrispmkii",
+    "port": "/dev/ttyACM0"
 }

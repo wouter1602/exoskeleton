@@ -84,26 +84,22 @@ void read_potentiometer(Motor &motor) {
     motor.ADC_value = analogRead(motor.potentiometer);      // Read ADC value
 }
 
-void read_potentiometer2(struct Motor *motor) {
-    motor->ADC_value = analogRead(motor->potentiometer);    // Read ADC value
-}
-
 /**
  * Set up the I/O of the Arduino.
  * @return void
  */
 void setup() {
   upper_motor.pwm_pin = MOTOR_1_PWM_PIN;                    // PWM pin
-  upper_motor.ADC_value = 50;                               // Default motor speed
+  upper_motor.pwm_value = 160;                               // Default motor speed
   upper_motor.enable_rotate_left_pin = MOTOR_1_LEFT_EN;     // Enable left rotation pin
   upper_motor.enable_rotate_right_pin = MOTOR_1_RIGHT_EN;   // Enable right rotation pin
   upper_motor.potentiometer = POTENT_1;                     // Potentiometer ADC pin
 
-  upper_motor.pwm_pin = MOTOR_2_PWM_PIN;                    //PWM pin
-  upper_motor.ADC_value = 50;                               // Default motor speed
-  upper_motor.enable_rotate_left_pin = MOTOR_2_LEFT_EN;     // Enable left rotation pin
-  upper_motor.enable_rotate_right_pin = MOTOR_2_RIGHT_EN;   // Enable right rotation pin
-  upper_motor.potentiometer = POTENT_2;                     // Potentiometer ADC pin
+  lower_motor.pwm_pin = MOTOR_2_PWM_PIN;                    // PWM pin
+  lower_motor.pwm_value = 160;                               // Default motor speed
+  lower_motor.enable_rotate_left_pin = MOTOR_2_LEFT_EN;     // Enable left rotation pin
+  lower_motor.enable_rotate_right_pin = MOTOR_2_RIGHT_EN;   // Enable right rotation pin
+  lower_motor.potentiometer = POTENT_2;                     // Potentiometer ADC pin
 
   setup_motor(upper_motor);                                 // Set input output for upper motor
   setup_motor(lower_motor);                                 // Set input output for lower motor
@@ -112,8 +108,10 @@ void setup() {
 }
 
 void loop() {
-    read_potentiometer2(&upper_motor);                        // Read upper motor ADC value
-    read_potentiometer2(&lower_motor);                        // Read lower motor ADC value
+    // read_potentiometer_1();                        // Read upper motor ADC value
+    // read_potentiometer_2();                        // Read lower motor ADC value
+    read_potentiometer(upper_motor);
+    read_potentiometer(lower_motor);
 
     Serial.print(upper_motor.ADC_value);                    // Print ADC values for debugging
     Serial.print(", ");
