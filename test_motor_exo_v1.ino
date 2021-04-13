@@ -49,6 +49,30 @@ void setup_motor(const Motor &motor) {
 }
 
 /**
+ * If motor speed is set to 0 this function stops the motor
+ * Otherwise it set the orientation and the give speed in the Motor struct
+ * @parm motor Motor struct with the pins, rotation and speed
+ * @return void
+ */
+void set_motor_speed(const Motor &motor) {
+    if (motor.pwm_value == 0) {                             // Motor should not rotate
+        analogWrite(motor.pwm_pin, motor.pwm_value);        // Disable PWM signal
+        digitalWrite(motor.enable_rotate_left_pin, LOW);    // Disable left enable
+        digitalWrite(motor.enable_rotate_right_pin, LOW);   // Disable right enable
+        return;
+    }
+    if (motor.rot_direction) {                              // Rotate right
+        digitalWrite(motor.enable_rotate_left_pin, LOW);    // Disable left enable
+        digitalWrite(motor.enable_rotate_right_pin, HIGH);  // Enable right enable
+    } else {                                                // Rotate left
+        digitalWrite(motor.enable_rotate_left_pin, HIGH);   // Enable left enable
+        digitalWrite(motor.enable_rotate_right_pin, LOW);   // Disable right enable
+    }
+
+    analogWrite(motor.pwm_pin, motor.pwm_value);            // Set motor speed
+}
+
+/**
  * Set up the i/o of the Arduino.
  * @return void
  */
