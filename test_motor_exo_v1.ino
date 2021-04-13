@@ -1,8 +1,36 @@
+// Motor PWM value
 #define enA 9
+
+// Motor rotation
 #define in1 4
 #define in2 2
+
+// Potentiometer
+#define POTENT_1 4
+
+struct Motor
+{
+  uint8_t pwm_pin = 0;
+  uint8_t pwm_value = 0;
+  uint8_t enable_rotate_left_pin = 0;
+  uint8_t enable_rotate_right_pin = 0;
+  uint8_t potentiometer = 0;
+  uint16_t ADC_value = 0;
+};
+
+
 int rotDirection = 0;
 void setup() {
+  Motor upper_motor;
+
+  upper_motor.pwm_pin = 9;
+  upper_motor.enable_rotate_left_pin = 4;
+  upper_motor.enable_rotate_right_pin = 2;
+  upper_motor.potentiometer = 4;
+
+  Motor lower_motor;
+
+  pinMode(upper_motor.pwm_pin, OUTPUT);
   pinMode(enA, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
