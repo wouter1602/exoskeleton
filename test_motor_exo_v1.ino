@@ -12,8 +12,8 @@
 #define MOTOR_2_RIGHT_EN 3
 
 // Potentiometer
-#define POTENT_1 4
-#define POTENT_2 3
+#define POTENT_1 A4
+#define POTENT_2 A3
 
 /**
  * Motor struct with all the values from an single motor combined.
@@ -84,6 +84,10 @@ void read_potentiometer(Motor &motor) {
     motor.ADC_value = analogRead(motor.potentiometer);      // Read ADC value
 }
 
+void read_potentiometer2(struct Motor *motor) {
+    motor->ADC_value = analogRead(motor->potentiometer);    // Read ADC value
+}
+
 /**
  * Set up the I/O of the Arduino.
  * @return void
@@ -108,8 +112,8 @@ void setup() {
 }
 
 void loop() {
-    read_potentiometer(upper_motor);                        // Read upper motor ADC value
-    read_potentiometer(lower_motor);                        // Read lower motor ADC value
+    read_potentiometer2(&upper_motor);                        // Read upper motor ADC value
+    read_potentiometer2(&lower_motor);                        // Read lower motor ADC value
 
     Serial.print(upper_motor.ADC_value);                    // Print ADC values for debugging
     Serial.print(", ");
