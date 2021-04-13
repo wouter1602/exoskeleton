@@ -20,7 +20,7 @@
  */
 struct Motor {
   uint8_t pwm_pin = 0;
-  uint8_t pwm_value = 0;
+  uint8_t pwm_value = 160;
   uint8_t enable_rotate_left_pin = 0;
   uint8_t enable_rotate_right_pin = 0;
   bool rot_direction = true;            // True is rotating clockwise, false is counter clockwise.
@@ -129,11 +129,11 @@ void loop() {
         Serial.println("Naar achter");
     }
 
-    if (upper_motor.ADC_value<100) {
+    if (upper_motor.ADC_value<450) {
         upper_motor.rot_direction = false;
     }
     
-    if (upper_motor.ADC_value> 900) {
+    if (upper_motor.ADC_value> 700) {
         upper_motor.rot_direction = true;
     }
 }
