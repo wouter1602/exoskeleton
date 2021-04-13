@@ -15,6 +15,8 @@
 #define POTENT_1 A4
 #define POTENT_2 A3
 
+#define TARGET_OFFSET 20
+
 /**
  * Motor struct with all the values from an single motor combined.
  */
@@ -84,6 +86,23 @@ void read_potentiometer(Motor &motor) {
     motor.ADC_value = analogRead(motor.potentiometer);      // Read ADC value
 }
 
+void goToTargetAngle(Motor &motor, uint16_t targetAngle, uint8_t offset, uint8_t speed) {
+    read_potentiometer(motor);                              // Read Potentiometer
+    if ((motor.ADC_value - offset) > targetAngle) {         // If true rotate clockwise
+        motor.rot_direction = true;
+        motor.pwm_value = speed;
+        set_motor_speed(motor);
+    } else if ((motor.ADC_value + offset) < targetAngle) {  // If true rotate counter clockswise
+        motor.rot_direction = false;
+        motor.pwm_value = speed;
+        set_motor_speed(motor);
+    } else {                                                // If true should stop rotating
+        motor.pwm_value = 0;
+        set_motor_speed(motor);
+    }
+    
+}
+
 /**
  * Set up the I/O of the Arduino.
  * @return void
@@ -108,34 +127,34 @@ void setup() {
 }
 
 void loop() {
-    // read_potentiometer_1();                        // Read upper motor ADC value
-    // read_potentiometer_2();                        // Read lower motor ADC value
-    read_potentiometer(upper_motor);
-    read_potentiometer(lower_motor);
+    read_potentiometer(upper_motor);                        // Read upper motor ADC value
+    read_potentiometer(lower_motor);                        // Read lower motor ADC value
 
     Serial.print(upper_motor.ADC_value);                    // Print ADC values for debugging
     Serial.print(", ");
     Serial.println(lower_motor.ADC_value);
 
-    set_motor_speed(upper_motor);
+    // set_motor_speed(upper_motor);
 
-    int pwmOutput=50; // 0 is laagst 255 is hoogst
-    // If button is pressed - change rotation direction
-    if ((upper_motor.ADC_value < 512) && (upper_motor.rot_direction == false)) {
-        Serial.println("Naar voor");
-        delay(10);
-    }
+    goToTargetAngle(upper_motor, 600, TARGET_OFFSET, 160);
+
+    // int pwmOutput=50; // 0 is laagst 255 is hoogst
+    // // If button is pressed - change rotation direction
+    // if ((upper_motor.ADC_value < 512) && (upper_motor.rot_direction == false)) {
+    //     Serial.println("Naar voor");
+    //     delay(10);
+    // }
   
-    // If button is pressed - change rotation direction
-    if ((upper_motor.ADC_value > 512) && (upper_motor.rot_direction == true)) {
-        Serial.println("Naar achter");
-    }
+    // // If button is pressed - change rotation direction
+    // if ((upper_motor.ADC_value > 512) && (upper_motor.rot_direction == true)) {
+    //     Serial.println("Naar achter");
+    // }
 
-    if (upper_motor.ADC_value<450) {
-        upper_motor.rot_direction = false;
-    }
+    // if (upper_motor.ADC_value<450) {
+    //     upper_motor.rot_direction = false;
+    // }
     
-    if (upper_motor.ADC_value> 700) {
-        upper_motor.rot_direction = true;
-    }
+    // if (upper_motor.ADC_value> 700) {
+    //     upper_motor.rot_direction = true;
+    // }
 }

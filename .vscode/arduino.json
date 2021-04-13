@@ -2,5 +2,7 @@
     "board": "arduino:avr:leonardo",
     "sketch": "test_motor_exo_v1.ino",
     "programmer": "arduino:avrispmkii",
+    "arduino.commandPath": "/opt/arduino/hardware/tools/avr/bin/avr-g++",
+    "output": "./.build",
     "port": "/dev/ttyACM0"
 }
